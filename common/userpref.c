@@ -82,6 +82,12 @@
 #include "userpref.h"
 #include "debug.h"
 
+#ifdef HAVE_FVISIBILITY
+#define LIBIMOBILEDEVICE_API __attribute__((visibility("default")))
+#else
+#define LIBIMOBILEDEVICE_API
+#endif
+
 #if defined(HAVE_GNUTLS)
 const ASN1_ARRAY_TYPE pkcs1_asn1_tab[] = {
 	{"PKCS1", 536872976, 0},
@@ -148,6 +154,14 @@ static char *userpref_utf16_to_utf8(wchar_t *unistr, long len, long *items_read,
 }
 #endif
 
+#ifdef __ANDROID__
+static char app_dir[200];
+LIBIMOBILEDEVICE_API void libimobiledevice_set_config_dir(const char *_app_dir)
+{
+    strcpy(app_dir, _app_dir);
+}
+#endif
+
 const char *userpref_get_config_dir()
 {
 	char *base_config_dir = NULL;
@@ -172,8 +186,10 @@ const char *userpref_get_config_dir()
 #else
 #ifdef __APPLE__
 	base_config_dir = strdup("/var/db");
+#elif __ANDROID__
+    base_config_dir = strdup(app_dir);
 #else
-	base_config_dir = strdup("/var/lib");
+	base_config_dir = strdup("/data/data/com.example.usbmuxd_testing");
 #endif
 #endif
 	__config_dir = string_concat(base_config_dir, DIR_SEP_S, USERPREF_CONFIG_DIR, NULL);

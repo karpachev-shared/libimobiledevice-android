@@ -84,6 +84,10 @@ case ${host_os} in
     AC_MSG_RESULT([${host_os}])
     darwin=true
     ;;
+  *android*)
+    AC_MSG_RESULT([${host_os}])
+    android=true
+    ;;
   *)
     AC_MSG_RESULT([${host_os}])
     AX_PTHREAD([], [AC_MSG_ERROR([pthread is required to build $PACKAGE_NAME])])
